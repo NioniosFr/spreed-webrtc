@@ -23,10 +23,30 @@
 			<a ng-repeat="room in roomsHistory" ng-click="joinRoomByName(room)"><span class="label label-default">{{room}}</span></a>
 		</p>
 	</div>
-	<div ng-if="!canJoinRooms()" class="welcome-container">
+
+	<!-- <div ng-if="!canJoinRooms()" class="welcome-container">
 		<div class="welcome-login">
-			<p class="h4">{{_("Please sign in.")}}</p>
+			<p class="h4">{{_("sign in")}}</p>
 			<button ng-if="!myuserid && usersettings.loginUserid" type="button" class="btn btn-primary" ng-click="usersettings.loginUserid()">{{_('Sign in')}}</button>
 		</div>
+	</div> -->
+
+	<div ng-if="!canJoinRooms()" class="welcome-container">
+			<form novalidate class="simple-form" role="form">
+				<div class="form-group">
+					<label for="username">User Name</label>
+					<input type="text" ng-model="user.name" class="form-control" id="username">
+				</div>
+
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input type="password" ng-model="user.password" class="form-control" id="password">
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" ng-click="login(user)" class="btn btn-primary">Sign in</button>
+				</div>
+			</form>
 	</div>
+
 </div>

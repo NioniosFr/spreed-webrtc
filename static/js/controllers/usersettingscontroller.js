@@ -23,7 +23,7 @@
 define([], function() {
 
 	// UsersettingsController
-	return ["$scope", "$element", "mediaStream", "safeApply", "$window", function($scope, $element, mediaStream, safeApply, $window) {
+	return ["$scope", "$element", "mediaStream", "safeApply", "$window", "identityProvider", "authentication", function($scope, $element, mediaStream, safeApply, $window, identityProvider, authentication) {
 
 		$scope.withUsersForget = true;
 
@@ -69,6 +69,16 @@ define([], function() {
 			$window.setTimeout(function() {
 				mediaStream.connector.forgetAndReconnect();
 			}, 0);
+		};
+
+		$scope.login = function(user) {
+			var res = identityProvider.authenticate(user.name, user.password, function(data){
+				if(data.status === 200){
+					authentication.setCredentials(user.name, user.password, data.data);
+				}else{
+					authentication.clearCredentials();
+				}
+			});
 		};
 
 	}];
