@@ -71,7 +71,11 @@ define([
 	'services/sandbox',
 	'services/dummystream',
 	'services/usermedia',
-	'services/playpromise'], function(_,
+	'services/playpromise',
+// PA Extras
+	'services/authentication',
+	'services/identityProvider'
+], function(_,
 desktopNotify,
 playSound,
 safeApply,
@@ -120,7 +124,10 @@ mediaDevices,
 sandbox,
 dummyStream,
 userMedia,
-playPromise) {
+playPromise,
+authentication,
+identityProvider
+) {
 
 	var services = {
 		desktopNotify: desktopNotify,
@@ -171,7 +178,9 @@ playPromise) {
 		sandbox: sandbox,
 		dummyStream: dummyStream,
 		userMedia: userMedia,
-		playPromise: playPromise
+		playPromise: playPromise,
+		authentication: authentication,
+		identityProvider: identityProvider
 	};
 
 	var initialize = function(angModule) {
