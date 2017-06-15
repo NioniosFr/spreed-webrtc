@@ -1,0 +1,4 @@
+- name: sansible.golang
+  version: v1.0
+
+- name: k0st1an.nodejs

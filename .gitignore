@@ -36,3 +36,7 @@ install-sh
 missing
 stamp-h1
 /node_modules
+/.vagrant
+/vmFiles
+/ansible/galaxy_roles
+/ansible/*.retry

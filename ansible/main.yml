@@ -1,7 +1,40 @@
 ---
 - hosts: webservers
-  remote_user: root
+  become: yes
+  # roles:
+  #   - role: sansible.golang
+  #     golang:
+  #       workspace_user: ubuntu
+  #       tarball: "go1.8.3.linux-amd64.tar.gz"
+  #       tarball_checksum: "1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772"
   tasks:
-    - name: test connection
-      ping:
-      remote_user: ubuntu
+    - name: Update the apt-cache
+      apt:
+        update_cache: true
+
+    - name: Install required build packages
+      apt:
+        name: "{{item}}"
+        state: present
+      with_items:
+          - netcat
+          - openssl
+          - git
+          - dos2unix
+          - curl
+          - wget
+          - vim
+          - automake
+          - autoconf
+
+    - name: Install Node
+      get_url:
+        url: https://deb.nodesource.com/setup_6.x
+        dest: /tmp/installnode.py
+        mode: 0755
+
+    - name: Install required build packages
+      apt:
+        name: nodejs
+        state: present
+        update_cache: true

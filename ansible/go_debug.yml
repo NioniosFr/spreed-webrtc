@@ -1,0 +1,24 @@
+---
+  - hosts: all
+    become: yes
+
+    pre_tasks:
+
+      - name: Install Unity desktop environment
+        apt:
+          name: "{{item}}"
+          update_cache: yes
+        with_items:
+            - ubuntu-desktop
+            - unity
+    tasks:
+      - name: Add atom source repository into sources list.
+        apt_repository:
+          repo: ppa:webupd8team/atom
+          state: present
+
+      - name: Install the "atom" package
+        apt:
+          name: atom
+          state: present
+          update_cache: yes
