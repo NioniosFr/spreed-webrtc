@@ -1,24 +1,38 @@
 ---
-  - hosts: all
-    become: yes
-
-    pre_tasks:
-
-      - name: Install Unity desktop environment
-        apt:
-          name: "{{item}}"
-          update_cache: yes
-        with_items:
-            - ubuntu-desktop
-            - unity
-    tasks:
-      - name: Add atom source repository into sources list.
-        apt_repository:
-          repo: ppa:webupd8team/atom
-          state: present
-
-      - name: Install the "atom" package
-        apt:
-          name: atom
-          state: present
-          update_cache: yes
+- hosts: all
+  become: yes
+  roles:
+    - role: gantsign.atom
+      users:
+        - username: ubuntu
+          atom_packages:
+            - minimap
+            - hyperclick
+            - linter
+            - linter-ui-default
+            - intentions
+            - busy-signal
+            - go-plus
+            - go-debug
+            - go-rename
+            - go-signature-statusbar
+  pre_tasks:
+    - name: Install Unity desktop environment
+      apt:
+        name: "{{item}}"
+        update_cache: yes
+      with_items:
+        - ubuntu-desktop
+        - unity
+  tasks:
+    - name: Install the go-debug package requirments
+      command:  "go get -u {{item}}"
+      with_items:
+        - golang.org/x/tools/cmd/goimports
+        - golang.org/x/tools/cmd/gorename
+        - github.com/sqs/goreturns
+        - github.com/nsf/gocode
+        - github.com/alecthomas/gometalinter
+        - github.com/zmb3/gogetdoc
+        - github.com/rogpeppe/godef
+        - golang.org/x/tools/cmd/guru

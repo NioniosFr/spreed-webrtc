@@ -1,12 +1,12 @@
 ---
 - hosts: webservers
   become: yes
-  # roles:
-  #   - role: sansible.golang
-  #     golang:
-  #       workspace_user: ubuntu
-  #       tarball: "go1.8.3.linux-amd64.tar.gz"
-  #       tarball_checksum: "1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772"
+  roles:
+    - role: sansible.golang
+      golang:
+        workspace_user: ubuntu
+        tarball: "go1.8.3.linux-amd64.tar.gz"
+        tarball_checksum: "1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772"
   tasks:
     - name: Update the apt-cache
       apt:
