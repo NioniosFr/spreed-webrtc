@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/xenial64"
 
   config.vm.provider "virtualbox" do |v|
-    v.gui = false
+    v.gui = true
   end
 
   config.vbguest.auto_update = false
@@ -27,6 +27,10 @@ Vagrant.configure("2") do |config|
     owner: "ubuntu", group: "ubuntu",
     mount_options: ["dmode=755,fmode=644"]
 
+  config.vm.synced_folder "./.vagrant", "/vagrant/.vagrant",
+    owner: "ubuntu", group: "ubuntu",
+    mount_options: ["dmode=755,fmode=600"]
+
   config.vm.synced_folder "./src", "/home/ubuntu/Workspace/spreed-webrtc/src",
     owner: "ubuntu", group: "ubuntu",
     mount_options: ["dmode=755,fmode=644"]
@@ -38,5 +42,26 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./static", "/home/ubuntu/Workspace/spreed-webrtc/static",
     owner: "ubuntu", group: "ubuntu",
     mount_options: ["dmode=755,fmode=644"]
+
+$ansible = <<SCRIPT
+apt-get install -y software-properties-common
+apt-add-repository -y ppa:ansible/ansible
+apt-get update
+apt-get install -y ansible
+ansible-galaxy install -r /vagrant/ansible/roles/roles.yml
+SCRIPT
+
+config.vm.provision "shell", inline: $ansible
+config.vm.provision "file", source: "./ansible/ansible.cfg", destination: "~/ansible.cfg"
+
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.inventory_path = "ansible"
+    provisioning_path      = "/vagrant/ansible"
+    ansible.playbook       = "ansible/main.yml"
+    ansible.limit          = "all" # or only "nodes" group, etc.
+    ansible.verbose        = true
+    ansible.install_mode   = "default"
+    ansible.install        = false
+  end
 
 end

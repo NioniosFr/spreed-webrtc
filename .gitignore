@@ -38,3 +38,5 @@ stamp-h1
 /node_modules
 /vmFiles
 /.vagrant
+/ansible/galaxy_roles
+/ansible/*.retry
