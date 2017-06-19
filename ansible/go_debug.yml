@@ -27,12 +27,13 @@
   tasks:
     - name: Install the go-debug package requirments
       command:  "go get -u {{item}}"
+      become: no
       with_items:
-        - golang.org/x/tools/cmd/goimports
-        - golang.org/x/tools/cmd/gorename
-        - github.com/sqs/goreturns
-        - github.com/nsf/gocode
-        - github.com/alecthomas/gometalinter
-        - github.com/zmb3/gogetdoc
-        - github.com/rogpeppe/godef
-        - golang.org/x/tools/cmd/guru
+        - 'golang.org/x/tools/cmd/goimports'
+        - 'golang.org/x/tools/cmd/gorename'
+        - 'github.com/sqs/goreturns'
+        - 'github.com/nsf/gocode'
+        - 'github.com/alecthomas/gometalinter'
+        - 'github.com/zmb3/gogetdoc'
+        - 'github.com/rogpeppe/godef'
+        - 'golang.org/x/tools/cmd/guru'
