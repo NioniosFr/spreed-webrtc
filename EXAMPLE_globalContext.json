@@ -1,0 +1,27 @@
+{
+  "App":"main",
+  "Cfg":{
+    "Title":"Pi Alpha",
+    "S":"static/ver=1497420179",
+    "B":"/",
+    "Token":"i-did-not-change-the-public-token-boo",
+    "Renegotiation":false,
+    "StunURIs":[],
+    "TurnURIs":[],
+    "Tokens":false,
+    "Version":"unreleased.1497420179",
+    "UsersEnabled":true,
+    "UsersAllowRegistration":false,
+    "UsersMode":"httpheader",
+    "DefaultRoomEnabled":false,
+    "Plugin":"",
+    "AuthorizeRoomCreation":true,
+    "AuthorizeRoomJoin":true,
+    "Modules":["screensharing","youtube","presentation","contacts"]
+  },
+    "Host":"192.168.33.20:8080",
+    "Ssl":false,
+    "Csp":false,
+    "Languages":["en-us","en"],
+    "S":"static/ver=1497420179"
+  }

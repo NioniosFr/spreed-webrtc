@@ -75,7 +75,7 @@ define([], function() {
 			var res = identityProvider.authenticate(user.name, user.password, function(data){
 				if(data.status === 200){
 					authentication.setCredentials(user.name, user.password, data.data);
-					$scope.master.displayName = user.name;
+					$scope.updateStatus(true);
 				}else{
 					authentication.clearCredentials();
 				}

@@ -49,6 +49,7 @@ define(['sjcl'], function(sjcl) {
 
           mediaStream.users.authorize(mediaUser, function(data){
             mediaStream.api.requestAuthentication(data.userid, data.nonce);
+            mediaUser.displayName = mediaUser.userid;
             mediaStream.users.store(mediaUser);
           }, function(data){
               console.log("Authorize error", data);
