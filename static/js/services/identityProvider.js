@@ -12,7 +12,6 @@ define([], function() {
     };
 
     var handleSuccess = function(res) {
-      debugger;
       return {
         success: true,
         token: res.data
