@@ -23,7 +23,7 @@
 define([], function() {
 
 	// UsersettingsController
-	return ["$scope", "$element", "mediaStream", "safeApply", "$window", "identityProvider", "authentication", function($scope, $element, mediaStream, safeApply, $window, identityProvider, authentication) {
+	return ["$scope", "$element", "mediaStream", "safeApply", "$window", "identityProvider", "authentication", "appData", function($scope, $element, mediaStream, safeApply, $window, identityProvider, authentication, appData) {
 
 		$scope.withUsersForget = true;
 
@@ -64,6 +64,7 @@ define([], function() {
 		};
 
 		this.forgetUserid = function() {
+			authentication.clearCredentials();
 			mediaStream.users.forget();
 			mediaStream.webrtc.doHangup("forgetUserid");
 			$window.setTimeout(function() {
@@ -74,8 +75,7 @@ define([], function() {
 		$scope.login = function(user) {
 			var res = identityProvider.authenticate(user.name, user.password, function(data){
 				if(data.status === 200){
-					authentication.setCredentials(user.name, user.password, data.data);
-					$scope.updateStatus(true);
+					authentication.setCredentials(user.name, user.password, data.data, $scope.loadUserSettings);
 				}else{
 					authentication.clearCredentials();
 				}
