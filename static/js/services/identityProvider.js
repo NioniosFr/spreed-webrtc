@@ -14,12 +14,11 @@ define([], function() {
     var handleSuccess = function(res) {
       return {
         success: true,
-        token: res.data
+        data: res.data,
       };
     };
 
     var handleError = function(res) {
-      debugger;
       return {
         success: false,
         data: res.data
@@ -40,7 +39,8 @@ define([], function() {
           data: {
             grant_type: 'password',
             username: username,
-            password: password
+            password: password,
+            scope: "profile email openid"
           }
         }).then(callback, callback);
       }

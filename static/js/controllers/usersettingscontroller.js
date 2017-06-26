@@ -73,10 +73,10 @@ define([], function() {
 		};
 
 		$scope.login = function(user) {
-			var res = identityProvider.authenticate(user.name, user.password, function(data){
-				if(data.status === 200){
-					authentication.setCredentials(user.name, user.password, data.data, $scope.loadUserSettings);
-				}else{
+			var res = identityProvider.authenticate(user.name, user.password, function(res){
+				if(res.status === 200){
+					authentication.setCredentials(user.name, res.data, $scope.loadUserSettings);
+				} else {
 					authentication.clearCredentials();
 				}
 			});
