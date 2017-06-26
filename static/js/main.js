@@ -56,7 +56,8 @@ require.config({
 
 		'partials': '../partials',
 		'sounds': '../sounds',
-		'translation': '../translation'
+		'translation': '../translation',
+		'jwt-decode':'libs/jwt-decode'
 	},
 	shim: {
 		'modernizr': {
@@ -117,6 +118,9 @@ require.config({
 		},
 		'webfont': {
 			exports: 'WebFont'
+		},
+		'jwt-decode':{
+			exports: 'jwt_decode'
 		}
 	}
 });
