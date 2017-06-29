@@ -1,8 +1,8 @@
 "use strict";
 define([], function() {
 
-  return ['$http', function($http) {
-    var baseUrl = 'http://localhost:5000/connect'
+  return ['$http', 'globalContext', function($http, globalContext) {
+    var baseUrl = globalContext.Cfg.IdentityProviderURI;
 
     var transformRequestData = function(obj) {
       var str = [];
@@ -29,7 +29,7 @@ define([], function() {
       authenticate: function(username, password, callback) {
         return $http({
           method: 'POST',
-          url: baseUrl + '/token',
+          url: baseUrl + '/connect/token',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
