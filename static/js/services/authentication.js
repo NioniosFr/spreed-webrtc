@@ -36,7 +36,6 @@ define(['sjcl', 'jwt_decode'], function (sjcl, jwt_decode) {
             userSettingsData.save(user);
 
             settings_callback();
-
           });
           delete data.nonce;
         }, function (data, status) {

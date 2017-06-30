@@ -18,9 +18,10 @@
 		</div>
 		<welcome-extra></welcome-extra>
 		<p class="rooms-history" ng-show="roomsHistory.length">
-			<span>{{_("Room history")}}</span>
+			<span>{{_("Available Rooms")}}</span>
 			<br/>
 			<a ng-repeat="room in roomsHistory" ng-click="joinRoomByName(room)"><span class="label label-default">{{room}}</span></a>
+
 		</p>
 	</div>
 

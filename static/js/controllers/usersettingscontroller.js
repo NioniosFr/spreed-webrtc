@@ -76,11 +76,14 @@ define([], function() {
 			var res = identityProvider.authenticate(user.name, user.password, function(res){
 				if(res.status === 200){
 					authentication.setCredentials(user.name, res.data, $scope.loadUserSettings);
+		
 				} else {
 					authentication.clearCredentials();
 				}
 			});
 		};
+
+		$scope.roomsHistory = $scope.user.profile !== undefined ? $scope.user.profile.Room : [];
 
 	}];
 

@@ -23,9 +23,10 @@
 define(['underscore', 'angular', 'text!partials/roombar.html'], function(_, angular, template) {
 
 	// roomBar
-	return ["$window", "rooms", "$timeout", "safeApply", function($window, rooms, $timeout, safeApply) {
+	return ["$window", "rooms", "$timeout", "appData", "safeApply", function($window, rooms, $timeout, appData, safeApply) {
 
 		var link = function($scope, $element) {
+
 
 			var clearRoomName = function() {
 				$scope.currentRoomName = null;
@@ -80,7 +81,6 @@ define(['underscore', 'angular', 'text!partials/roombar.html'], function(_, angu
 			$scope.$watch("peer", function(peer) {
 				$scope.layout.roombar = !peer;
 			});
-
 			clearRoomName();
 		};
 
