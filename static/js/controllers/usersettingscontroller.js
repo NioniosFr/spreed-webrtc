@@ -20,10 +20,10 @@
  */
 
 "use strict";
-define([], function() {
+define(['underscore'], function(_) {
 
 	// UsersettingsController
-	return ["$scope", "$element", "mediaStream", "safeApply", "$window", "identityProvider", "authentication", "appData", function($scope, $element, mediaStream, safeApply, $window, identityProvider, authentication, appData) {
+	return ["$scope", "$element", "mediaStream", "safeApply", "$window", "identityProvider", "authentication", function($scope, $element, mediaStream, safeApply, $window, identityProvider, authentication) {
 
 		$scope.withUsersForget = true;
 
@@ -83,7 +83,7 @@ define([], function() {
 			});
 		};
 
-		$scope.roomsHistory = $scope.user.profile !== undefined ? $scope.user.profile.Room : [];
+		$scope.roomsHistory = $scope.user.profile !== undefined ? _.union($scope.user.profile.Room, $scope.roomsHistory) : [];
 
 	}];
 
