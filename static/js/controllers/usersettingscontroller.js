@@ -26,6 +26,7 @@ define(['underscore'], function(_) {
 	return ["$scope", "$element", "mediaStream", "safeApply", "$window", "identityProvider", "authentication", function($scope, $element, mediaStream, safeApply, $window, identityProvider, authentication) {
 
 		$scope.withUsersForget = true;
+		$scope.showError = "hidden";
 
 		this.registerUserid = function(event) {
 
@@ -67,18 +68,30 @@ define(['underscore'], function(_) {
 			authentication.clearCredentials();
 			mediaStream.users.forget();
 			mediaStream.webrtc.doHangup("forgetUserid");
+
 			$window.setTimeout(function() {
-				mediaStream.connector.forgetAndReconnect();
+				mediaStream.connector.disconnect();
+				authentication.clearCredentials();
+				$scope.manualReloadApp('/');
 			}, 0);
 		};
 
+
+		$scope.dismiss = function() {
+			 $scope.showError = "hidden";
+			 safeApply($scope);
+		};
+
 		$scope.login = function(user) {
+			$scope.showError = "hidden";
 			var res = identityProvider.authenticate(user.name, user.password, function(res){
 				if(res.status === 200){
 					authentication.setCredentials(user.name, res.data, $scope.loadUserSettings);
-		
 				} else {
 					authentication.clearCredentials();
+					$scope.errorMessage = res.data.error_description; //"Wrong credentials";
+					$scope.showError = "visible";
+					safeApply($scope);
 				}
 			});
 		};
