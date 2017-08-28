@@ -47,20 +47,14 @@ define(['sjcl', 'jwt_decode'], function (sjcl, jwt_decode) {
       // authentication
       return {
         setCredentials: function (username, data, settings_callback) {
-          var identityProviderSecretKey = "802a561a-727a-47da-95f6-968cc2e74354";
           var profile = jwt_decode(data.id_token);
 
           var mediaUser = createSuseridLocal('some-secret-do-not-keep', username, profile);
           authorize(mediaUser, settings_callback);
 
-          // set default auth header for http requests
-          $http.defaults.headers.common['x-userid'] = username; //data.user.name
-          $http.defaults.headers.common.Authorization = 'Bearer ' + data.access_token;
         },
 
         clearCredentials: function () {
-          $http.defaults.headers.common['x-userid'] = undefined;
-          $http.defaults.headers.common.Authorization = undefined;
           userSettingsData.clear();
           mediaStream.users.forget();
         }
