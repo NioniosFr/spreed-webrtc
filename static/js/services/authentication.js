@@ -1,6 +1,6 @@
 "use strict";
 
-define(['sjcl', 'jwt_decode'], function (sjcl, jwt_decode) {
+define(['sjcl', 'jwt-decode'], function (sjcl, jwt_decode) {
   return ['$http', 'mediaStream', 'userSettingsData', 'appData',
     function ($http, mediaStream, userSettingsData, appData) {
 
