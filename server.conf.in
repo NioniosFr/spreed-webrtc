@@ -232,6 +232,3 @@ enabled = false
 
 ; The Identity provider's URI where the client can authenticate against and retrieve an access_token and an id_token
 ;identityProviderURI = https://localhost:5000
-
-; The URI to the API which to query for room management user authorization etc.
-;externalApiURI = https://localhost:5001

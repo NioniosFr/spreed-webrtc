@@ -31,7 +31,6 @@ type Config struct {
 	RoomTypeDefault                 string                    `json:"-"` // New rooms default to this type
 	RoomTypes                       map[*regexp.Regexp]string `json:"-"` // Map of regular expression -> room type
 	IdentityProviderURI             string                    // External identity provider's URI
-	ExternalApiURI                  string                    `json:"-"` // The external management API URI (the parent API)
 }
 
 func (config *Config) WithModule(m string) bool {
