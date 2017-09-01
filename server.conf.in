@@ -163,7 +163,15 @@ enabled = false
 ;   headers into the proxy connection. While certificate mode offers the highest
 ;   security it is currently considered experimental and the user experience
 ;   varies between browsers and platforms.
-;mode = sharedsecret
+; jwt:
+    The user authenticates with an identity provider and retrieves a JWT.
+    The JWT is validated in the frontend for data integrity. Once validated, the
+    initial JWT value along with the "name" attribute found in the unwrapped JWT
+    are send via the "sharedsecret" user handler to the backend for further
+    validation. Once the token and its "jwt_signature" are validated, the user
+    will be authenticated and the JWT claims will be stored both in the backend
+    and frontend for later usage.
+;mode = "jwt"
 ; The shared secred for HMAC validation in "sharedsecret" mode. Best use 32 or
 ; 64 bytes of random data.
 ;sharedsecret_secret = some-secret-do-not-keep
@@ -232,3 +240,7 @@ enabled = false
 
 ; The Identity provider's URI where the client can authenticate against and retrieve an access_token and an id_token
 ;identityProviderURI = https://localhost:5000
+
+; The secret with which the JWT was signed during issuance by the identity
+; provider.
+;"jwtSignature" = "some_identity_provider_secret"
