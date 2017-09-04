@@ -81,13 +81,13 @@ encryptionSecret = tne-default-encryption-block-key
 ; The default room is the room at the root URL of the servers base address and
 ; all users will join this room if enabled. If it is disabled then a room join
 ; form will be shown instead.
-;defaultRoomEnabled = true
+;defaultRoomEnabled = false
 ; Whether a user account is required to join a room. This only has an effect
-; if user accounts are enabled. Optional, defaults to false.
-;authorizeRoomJoin = false
+; if user accounts are enabled. Optional, defaults to true.
+;authorizeRoomJoin = true
 ; Whether a user account is required to create a room. This only has an effect
-; if user accounts are enabled. Optional, defaults to false.
-;authorizeRoomCreation = false
+; if user accounts are enabled. Optional, defaults to true.
+;authorizeRoomCreation = true
 ; Wether the pipelines API should be enabled. Optional, defaults to false.
 ;pipelinesEnabled = false
 ; Server token is a public random string which is used to enhance security of
@@ -145,7 +145,7 @@ serverRealm = local
 
 [users]
 ; Set to true to enable user functionality.
-enabled = false
+enabled = true
 ; Set users authorization mode.
 ; sharedsecret:
 ;   Validates the userid with a HMAC authentication secret.
@@ -164,13 +164,13 @@ enabled = false
 ;   security it is currently considered experimental and the user experience
 ;   varies between browsers and platforms.
 ; jwt:
-    The user authenticates with an identity provider and retrieves a JWT.
-    The JWT is validated in the frontend for data integrity. Once validated, the
-    initial JWT value along with the "name" attribute found in the unwrapped JWT
-    are send via the "sharedsecret" user handler to the backend for further
-    validation. Once the token and its "jwt_signature" are validated, the user
-    will be authenticated and the JWT claims will be stored both in the backend
-    and frontend for later usage.
+;    The user authenticates with an identity provider and retrieves a JWT.
+;    The JWT is validated in the frontend for data integrity. Once validated, the
+;    initial JWT value along with the "name" attribute found in the unwrapped JWT
+;    are send via the "sharedsecret" user handler to the backend for further
+;    validation. Once the token and its "jwt_signature" are validated, the user
+;    will be authenticated and the JWT claims will be stored both in the backend
+;    and frontend for later usage.
 ;mode = "jwt"
 ; The shared secred for HMAC validation in "sharedsecret" mode. Best use 32 or
 ; 64 bytes of random data.
@@ -243,4 +243,4 @@ enabled = false
 
 ; The secret with which the JWT was signed during issuance by the identity
 ; provider.
-;"jwtSignature" = "some_identity_provider_secret"
+;jwt_signature = "some_identity_provider_secret"

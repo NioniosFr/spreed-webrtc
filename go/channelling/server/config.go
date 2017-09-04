@@ -129,13 +129,13 @@ func NewConfig(container phoenix.Container, tokens bool) (*channelling.Config, e
 		TurnURIs:                        turnURIs,
 		Tokens:                          tokens,
 		Version:                         version,
-		UsersEnabled:                    container.GetBoolDefault("users", "enabled", false),
+		UsersEnabled:                    container.GetBoolDefault("users", "enabled", true),
 		UsersAllowRegistration:          container.GetBoolDefault("users", "allowRegistration", false),
 		UsersMode:                       container.GetStringDefault("users", "mode", ""),
-		DefaultRoomEnabled:              container.GetBoolDefault("app", "defaultRoomEnabled", true),
+		DefaultRoomEnabled:              container.GetBoolDefault("app", "defaultRoomEnabled", false),
 		Plugin:                          container.GetStringDefault("app", "plugin", ""),
-		AuthorizeRoomCreation:           container.GetBoolDefault("app", "authorizeRoomCreation", false),
-		AuthorizeRoomJoin:               container.GetBoolDefault("app", "authorizeRoomJoin", false),
+		AuthorizeRoomCreation:           container.GetBoolDefault("app", "authorizeRoomCreation", true),
+		AuthorizeRoomJoin:               container.GetBoolDefault("app", "authorizeRoomJoin", true),
 		Modules:                         modules,
 		ModulesTable:                    modulesTable,
 		GlobalRoomID:                    container.GetStringDefault("app", "globalRoom", ""),
@@ -144,7 +144,6 @@ func NewConfig(container phoenix.Container, tokens bool) (*channelling.Config, e
 		RoomTypeDefault:                 defaultRoomType,
 		RoomTypes:                       roomTypes,
 		IdentityProviderURI:             container.GetStringDefault("extentions", "identityProviderURI", ""),
-		JwtSignature										 container.GetStringDefault("extentions", "jwtSignature", "")
 	}, nil
 }
 

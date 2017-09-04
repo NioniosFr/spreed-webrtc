@@ -331,7 +331,14 @@ func (users *Users) createHandler(mode string, runtime phoenix.Runtime) (handler
 		if secret != "" {
 			handler = &UsersSharedsecretHandler{secret: []byte(secret)}
 		} else {
-			err = errors.New("Cannot enable sharedsecret users handler: No secret.")
+			err = errors.New("cannot enable sharedsecret users handler: No secret")
+		}
+	case "jwt":
+		signature, _ := runtime.GetString("extensions", "jwt_signature")
+		if signature != "" {
+			handler = &UsersSharedsecretHandler{secret: []byte(signature)}
+		} else {
+			err = errors.New("cannot enable JWT users handler: No identity provider signature")
 		}
 	case "httpheader":
 		headerName, _ := runtime.GetString("users", "httpheader_header")
