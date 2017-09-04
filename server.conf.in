@@ -171,7 +171,7 @@ enabled = true
 ;    validation. Once the token and its "jwt_signature" are validated, the user
 ;    will be authenticated and the JWT claims will be stored both in the backend
 ;    and frontend for later usage.
-;mode = "jwt"
+;mode = jwt
 ; The shared secred for HMAC validation in "sharedsecret" mode. Best use 32 or
 ; 64 bytes of random data.
 ;sharedsecret_secret = some-secret-do-not-keep
@@ -243,4 +243,4 @@ enabled = true
 
 ; The secret with which the JWT was signed during issuance by the identity
 ; provider.
-;jwt_signature = "some_identity_provider_secret"
+;jwt_signature = some_identity_provider_secret
