@@ -40,3 +40,4 @@ stamp-h1
 /.vagrant
 /ansible/galaxy_roles
 /ansible/*.retry
+/.vscode
