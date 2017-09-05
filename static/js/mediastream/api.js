@@ -326,13 +326,14 @@ define(['jquery', 'underscore', 'ua-parser'], function($, _, uaparser) {
 
 	};
 
-	Api.prototype.requestAuthentication = function(userid, nonce) {
+	Api.prototype.requestAuthentication = function(userid, nonce, extra) {
 
 		var data = {
 			Type: "Authentication",
 			Authentication: {
 				Userid: userid,
-				Nonce: nonce
+				Nonce: nonce,
+				Extra: extra
 			}
 		}
 

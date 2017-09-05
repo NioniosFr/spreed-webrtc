@@ -230,4 +230,5 @@ type DataAlive struct {
 type DataAuthentication struct {
 	Type           string
 	Authentication *SessionToken
+	Extra          map[string]interface{} `json:",omitempty"`
 }
