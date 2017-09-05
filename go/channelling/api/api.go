@@ -138,7 +138,7 @@ func (api *channellingAPI) OnIncoming(sender channelling.Sender, session *channe
 			return nil, channelling.NewDataError("bad_request", "message did not contain Authentication")
 		}
 
-		return api.HandleAuthentication(session, msg.Authentication.Authentication)
+		return api.HandleAuthentication(session, msg.Authentication.Authentication, msg.Authentication)
 	case "Bye":
 		if msg.Bye == nil {
 			log.Println("Received invalid bye message.", msg)

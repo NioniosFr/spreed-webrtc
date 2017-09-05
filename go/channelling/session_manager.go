@@ -39,7 +39,7 @@ type SessionManager interface {
 	UserStore
 	SessionCreator
 	DestroySession(sessionID, userID string)
-	Authenticate(*Session, *SessionToken, string) error
+	Authenticate(*Session, *SessionToken, string, *DataAuthentication) error
 	GetUserSessions(session *Session, id string) []*DataSession
 	DecodeSessionToken(token string) (st *SessionToken)
 }
@@ -122,7 +122,7 @@ func (sessionManager *sessionManager) CreateSession(st *SessionToken, userid str
 
 	if userid != "" {
 		// Errors are ignored here, session is returned without userID when auth failed.
-		sessionManager.Authenticate(session, st, userid)
+		sessionManager.Authenticate(session, st, userid, nil)
 	}
 
 	return session
@@ -146,7 +146,7 @@ func (sessionManager *sessionManager) DestroySession(sessionID, userID string) {
 	sessionManager.Unlock()
 }
 
-func (sessionManager *sessionManager) Authenticate(session *Session, st *SessionToken, userid string) error {
+func (sessionManager *sessionManager) Authenticate(session *Session, st *SessionToken, userid string, auth *DataAuthentication) error {
 	if err := session.Authenticate(sessionManager.Realm(), st, userid); err != nil {
 		return err
 	}

@@ -27,8 +27,8 @@ import (
 	"github.com/strukturag/spreed-webrtc/go/channelling"
 )
 
-func (api *channellingAPI) HandleAuthentication(session *channelling.Session, st *channelling.SessionToken) (*channelling.DataSelf, error) {
-	if err := api.SessionManager.Authenticate(session, st, ""); err != nil {
+func (api *channellingAPI) HandleAuthentication(session *channelling.Session, st *channelling.SessionToken, auth *channelling.DataAuthentication) (*channelling.DataSelf, error) {
+	if err := api.SessionManager.Authenticate(session, st, "", auth); err != nil {
 		log.Println("Authentication failed", err, st.Userid, st.Nonce)
 		return nil, err
 	}
