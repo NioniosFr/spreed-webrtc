@@ -291,7 +291,7 @@ func runner(runtime phoenix.Runtime) error {
 	sessionManager := channelling.NewSessionManager(config, tickets, hub, roomManager, roomManager, buddyImages, sessionSecret)
 	statsManager := channelling.NewStatsManager(hub, roomManager, sessionManager)
 	busManager := channelling.NewBusManager(apiConsumer, natsClientId, natsChannellingTrigger, natsChannellingTriggerSubject)
-	pipelineManager := channelling.NewPipelineManager(busManager, sessionManager, sessionManager, sessionManager)
+	pipelineManager := channelling.NewPipelineManager(busManager, sessionManager, sessionManager, sessionManager, config)
 	if err := roomManager.SetBusManager(busManager); err != nil {
 		return err
 	}
