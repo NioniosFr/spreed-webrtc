@@ -173,6 +173,7 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 			log.Printf("%v %v", claims.AllowedRooms, claims.StandardClaims.ExpiresAt)
 		} else {
 			log.Print(err)
+			return err
 		}
 	}
 
