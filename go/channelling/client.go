@@ -74,6 +74,7 @@ func (client *Client) OnText(b buffercache.Buffer) {
 	} else if reply != nil {
 		client.reply(incoming.Iid, reply)
 	}
+
 	client.ChannellingAPI.OnIncomingProcessed(client, client.session, incoming, reply, err)
 }
 

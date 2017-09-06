@@ -138,6 +138,10 @@ func (api *channellingAPI) OnIncoming(sender channelling.Sender, session *channe
 			return nil, channelling.NewDataError("bad_request", "message did not contain Authentication")
 		}
 
+		if msg.Authentication == nil || msg.Authentication.Tokens == nil && api.config.UsersMode == "jwt" {
+			return nil, channelling.NewDataError("bad_request", "message did not contain Tokens['id_token']")
+		}
+
 		return api.HandleAuthentication(session, msg.Authentication.Authentication, msg.Authentication)
 	case "Bye":
 		if msg.Bye == nil {

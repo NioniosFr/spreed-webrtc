@@ -26,7 +26,11 @@ import (
 	"net/http"
 	"sync"
 
+	"log"
+
 	"github.com/gorilla/securecookie"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 type UserStats interface {
@@ -151,12 +155,33 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 		return err
 	}
 
+	// TODO: (nioniosfr) Validate here the JWT and store the claims in the User object.
+
+	claims := &DataUserClaims{}
+	if auth.Tokens != nil && auth.Tokens.IdToken != "" {
+		// Parse the token
+		token, err := jwt.ParseWithClaims(auth.Tokens.IdToken, claims, func(token *jwt.Token) (interface{}, error) {
+			// since we only use the one private key to sign the tokens,
+			// we also only use its public counter part to verify
+			//channeling. // .JwtSignature
+
+			// TODO: (nioniosfr) Put the signature in the config so we have access to it here.
+			return jwt.UnsafeAllowNoneSignatureType, nil
+		})
+
+		if claims, ok := token.Claims.(*DataUserClaims); ok && token.Valid {
+			log.Printf("%v %v", claims.AllowedRooms, claims.StandardClaims.ExpiresAt)
+		} else {
+			log.Print(err)
+		}
+	}
+
 	// Authentication success.
 	suserid := session.Userid()
 	sessionManager.Lock()
 	user, ok := sessionManager.userTable[suserid]
 	if !ok {
-		user = NewUser(suserid)
+		user = NewUser(suserid, claims)
 		sessionManager.userTable[suserid] = user
 	}
 	sessionManager.Unlock()

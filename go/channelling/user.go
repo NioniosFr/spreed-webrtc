@@ -30,15 +30,17 @@ import (
 type User struct {
 	Id           string
 	sessionTable map[string]*Session
+	Claims       *DataUserClaims
 	mutex        sync.RWMutex
 }
 
-func NewUser(id string) *User {
+func NewUser(id string, claims *DataUserClaims) *User {
 	user := &User{
 		Id:           id,
 		sessionTable: make(map[string]*Session),
+		Claims:       claims,
 	}
-
+	log.Printf("user claims: %s", user.Claims)
 	return user
 }
 
@@ -79,6 +81,7 @@ func (u *User) Data() *DataUser {
 	return &DataUser{
 		Id:       u.Id,
 		Sessions: len(u.sessionTable),
+		Claims:   u.Claims,
 	}
 }
 

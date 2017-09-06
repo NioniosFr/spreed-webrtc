@@ -6,6 +6,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.gui = false
+    v.memory = 1024
+    v.cpus = 1
+    v.customize ["modifyvm", :id, "--vram", "12"]
   end
 
   config.vbguest.auto_update = false

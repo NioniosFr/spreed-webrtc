@@ -22,6 +22,7 @@
 package server
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/hmac"
 	"crypto/rand"
@@ -35,6 +36,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
@@ -47,6 +49,8 @@ import (
 	"github.com/longsleep/pkac"
 	"github.com/satori/go.uuid"
 	"github.com/strukturag/phoenix"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 var (
@@ -262,6 +266,78 @@ func (uh *UsersCertificateHandler) Create(un *UserNonce, request *http.Request) 
 
 }
 
+type JwtUsersSharedsecretHandler struct {
+	UsersSharedsecretHandler
+	jwtSignature string
+}
+
+func (uh *JwtUsersSharedsecretHandler) Get(request *http.Request) (userid string, err error) {
+	return uh.UsersSharedsecretHandler.Get(request)
+}
+
+func (uh *JwtUsersSharedsecretHandler) Validate(snr *SessionNonceRequest, request *http.Request) (string, error) {
+	userid, err := uh.UsersSharedsecretHandler.Validate(snr, request)
+	if err != nil {
+		return "", err
+	}
+
+	token, err := uh.ParseRequest(request)
+	if err != nil {
+		return "", err
+	}
+
+	if token.Valid {
+		// At this stage we don't really care for claims
+		return userid, nil
+	}
+
+	return "", nil
+}
+
+func (uh *JwtUsersSharedsecretHandler) ParseRequest(request *http.Request) (*jwt.Token, error) {
+	// Read body
+	body, err := ioutil.ReadAll(request.Body)
+	defer request.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+	var dat channelling.DataAuthentication
+	err = json.Unmarshal(body, &dat)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the token
+	token, err := jwt.Parse(dat.Tokens.IdToken, func(token *jwt.Token) (interface{}, error) {
+		// since we only use the one private key to sign the tokens,
+		// we also only use its public counter part to verify
+		//channeling. // .JwtSignature
+
+		if uh.jwtSignature == "" {
+			return jwt.UnsafeAllowNoneSignatureType, nil
+		}
+
+		return []byte(uh.jwtSignature), nil
+	})
+
+	return token, err
+}
+
+func (uh *JwtUsersSharedsecretHandler) Create(un *UserNonce, request *http.Request) (*UserNonce, error) {
+
+	// TODO(longsleep): Make this configureable - One year for now ...
+	expiration := time.Now().Add(time.Duration(1) * time.Hour * 24 * 31 * 12)
+	un.Timestamp = expiration.Unix()
+	un.UseridCombo = fmt.Sprintf("%d:%s", un.Timestamp, un.Userid)
+	un.Secret = uh.createHMAC(un.UseridCombo)
+
+	return un, nil
+
+}
+
 type UserNonce struct {
 	Nonce       string `json:"nonce"`
 	Userid      string `json:"userid"`
@@ -334,12 +410,18 @@ func (users *Users) createHandler(mode string, runtime phoenix.Runtime) (handler
 			err = errors.New("cannot enable sharedsecret users handler: No secret")
 		}
 	case "jwt":
-		signature, _ := runtime.GetString("extensions", "jwt_signature")
-		if signature != "" {
-			handler = &UsersSharedsecretHandler{secret: []byte(signature)}
-		} else {
-			err = errors.New("cannot enable JWT users handler: No identity provider signature")
+		secret, _ := runtime.GetString("users", "sharedsecret_secret")
+		if secret == "" {
+			err = errors.New("cannot enable sharedsecret users handler: No secret")
+			return
 		}
+
+		jwtSignature, _ := runtime.GetString("extensions", "jwt_signature")
+		if jwtSignature == "" {
+			log.Print("jwt_signature is an empty value. This implies that the certificate will be on 'none' signature type, otherwise authentication will always fail.")
+		}
+
+		handler = &JwtUsersSharedsecretHandler{UsersSharedsecretHandler: UsersSharedsecretHandler{secret: []byte(secret)}, jwtSignature: jwtSignature}
 	case "httpheader":
 		headerName, _ := runtime.GetString("users", "httpheader_header")
 		if headerName == "" {
@@ -443,6 +525,14 @@ func (users *Users) Post(request *http.Request) (int, interface{}, http.Header) 
 	ct := request.Header.Get("Content-Type")
 	if strings.HasPrefix(ct, "application/json") {
 		snr = &SessionNonceRequest{}
+		// Read body
+		// body, err := ioutil.ReadAll(request.Body)
+		// defer request.Body.Close()
+		// if err != nil {
+		// 	return 400, NewApiError("users_bad_request", "Failed to parse request"), http.Header{"Content-Type": {"application/json"}}
+		// }
+		// request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
 		decoder := json.NewDecoder(request.Body)
 		err := decoder.Decode(snr)
 		if err != nil {

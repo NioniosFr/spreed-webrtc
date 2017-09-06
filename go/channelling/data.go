@@ -21,6 +21,8 @@
 
 package channelling
 
+import "github.com/dgrijalva/jwt-go"
+
 type DataError struct {
 	Type    string
 	Code    string
@@ -111,9 +113,16 @@ type DataSession struct {
 	stamp   int64
 }
 
+type DataUserClaims struct {
+	Roles        string   `json:"Role"`
+	AllowedRooms []string `json:"Room"`
+	jwt.StandardClaims
+}
+
 type DataUser struct {
 	Id       string
 	Sessions int
+	Claims   *DataUserClaims
 }
 
 type DataBye struct {
@@ -230,5 +239,10 @@ type DataAlive struct {
 type DataAuthentication struct {
 	Type           string
 	Authentication *SessionToken
-	Extra          map[string]interface{} `json:",omitempty"`
+	Tokens         *DataTokensAuthentication `json:"tokens"`
+}
+
+type DataTokensAuthentication struct {
+	AccessToken string `json:"access_token"`
+	IdToken     string `json:"id_token"`
 }

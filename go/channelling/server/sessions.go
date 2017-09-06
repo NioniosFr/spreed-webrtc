@@ -22,8 +22,10 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -57,12 +59,17 @@ func (sessions *Sessions) Patch(request *http.Request) (int, interface{}, http.H
 	// Make sure to always run all the checks to make timing attacks harder.
 	error := false
 
-	decoder := json.NewDecoder(request.Body)
+	body, _ := ioutil.ReadAll(request.Body)
+	defer request.Body.Close()
+
 	var snr SessionNonceRequest
-	err := decoder.Decode(&snr)
+	err := json.Unmarshal(body, &snr) // := json.NewDecoder(request.Body)
+	//err := decoder.Decode(&snr)
 	if err != nil {
 		error = true
 	}
+	// And now set a new body, which will simulate the same data we read:
+	request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 
 	vars := mux.Vars(request)
 	id, ok := vars["id"]
@@ -124,6 +131,8 @@ func (sessions *Sessions) Patch(request *http.Request) (int, interface{}, http.H
 	if error {
 		return 403, NewApiError("session_patch_failed", "Failed to patch session"), http.Header{"Content-Type": {"application/json"}}
 	}
+	// if session, ok := sessions.GetSession(snr.Id); ok {
+	// }
 
 	log.Printf("Session patch successfull %s -> %s\n", snr.Id, userid)
 	return 200, &SessionNonce{Nonce: nonce, Userid: userid, Success: true}, http.Header{"Content-Type": {"application/json"}}

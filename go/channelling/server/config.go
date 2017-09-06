@@ -143,7 +143,7 @@ func NewConfig(container phoenix.Container, tokens bool) (*channelling.Config, e
 		ContentSecurityPolicyReportOnly: container.GetStringDefault("app", "contentSecurityPolicyReportOnly", ""),
 		RoomTypeDefault:                 defaultRoomType,
 		RoomTypes:                       roomTypes,
-		IdentityProviderURI:             container.GetStringDefault("extentions", "identityProviderURI", ""),
+		IdentityProviderURI:             container.GetStringDefault("extensions", "identityProviderURI", ""),
 	}, nil
 }
 
