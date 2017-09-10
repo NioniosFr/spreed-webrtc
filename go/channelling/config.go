@@ -31,6 +31,8 @@ type Config struct {
 	RoomTypeDefault                 string                    `json:"-"` // New rooms default to this type
 	RoomTypes                       map[*regexp.Regexp]string `json:"-"` // Map of regular expression -> room type
 	IdentityProviderURI             string                    // External identity provider's URI
+	JwtSignature                    string                    `json:"-"` // The signature that signed the token,
+	JwtRoomLock                     bool                      // Whether we should block room access based on JWT `Room` claims
 }
 
 func (config *Config) WithModule(m string) bool {

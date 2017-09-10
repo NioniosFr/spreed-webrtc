@@ -243,4 +243,16 @@ enabled = true
 
 ; The secret with which the JWT was signed during issuance by the identity
 ; provider.
+; If not defined or empty, it is assumed that the token is not signed (`none` signing algorithm).
 ;jwt_signature = some_identity_provider_secret
+
+; Whether the server should block users from creating/joining rooms based on their
+; JWT `Room` claims. Defaults to true
+; To have an effect, the following config requirements have to be met:
+;   app:defaultRoomEnabled->false (complies with the frontend app's flow)
+;   app:authorizeRoomJoin->true
+;   app:authorizeRoomCreation->true
+;   users:enabled->true
+;   users:mode->jwt
+; The JWT claim has to contain one or more claims named: `Room`
+;jwt_room_lock = true

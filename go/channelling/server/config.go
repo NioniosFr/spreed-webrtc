@@ -144,6 +144,8 @@ func NewConfig(container phoenix.Container, tokens bool) (*channelling.Config, e
 		RoomTypeDefault:                 defaultRoomType,
 		RoomTypes:                       roomTypes,
 		IdentityProviderURI:             container.GetStringDefault("extensions", "identityProviderURI", ""),
+		JwtSignature:                    container.GetStringDefault("extensions", "jwt_signature", ""),
+		JwtRoomLock:                     container.GetBoolDefault("extensions", "jwt_room_lock", true),
 	}, nil
 }
 
