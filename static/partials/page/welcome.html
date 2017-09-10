@@ -1,7 +1,9 @@
 <div welcome ng-form="welcome" class="welcome container-fluid" ng-show="!peer" ng-controller="UsersettingsController as usersettings">
-	<div class="welcome-logo"></div>
-	<div ng-if="canJoinRooms()" class="welcome-container">
-		<h1>{{_("Enter a room name")}}</h1>
+	<!-- <div class="welcome-logo"></div> -->
+	<div ng-if="canJoinRooms()" class="ui">
+
+		<!--
+		 <h1>{{_("Enter a room name")}}</h1>
 		<div class="form-group welcome-input" ng-class="{'has-error': welcome.$invalid, 'has-success': welcome.$valid && roomdata.name}">
 			<input type="text" class="form-control roomdata-link-input input-lg" ng-model="roomdataInput.name" ng-maxlength="30" on-enter="joinRoomByName(roomdata.name)"
 			    placeholder="{{roomdata.placeholder}}">
@@ -18,13 +20,28 @@
 			<p class="h4">{{_("Enter the name of an existing room. You can create new rooms when you are signed in.")}}</p>
 			<button ng-if="!myuserid && usersettings.loginUserid" type="button" class="btn btn-primary" ng-click="usersettings.loginUserid()">{{_('Sign in')}}</button>
 		</div>
+	 -->
+
 		<welcome-extra></welcome-extra>
+
+		<h1>{{_("To join a room select one from the list")}}</h1>
+		<div class="welcome-logo"></div>
+		<div class="rooms-allowed" ng-show="allowedRooms.length">
+			<div class="list-group">
+				<br />
+				<h2>{{_("Available Rooms")}}</h2>
+				<br />
+				<a ng-repeat="room in allowedRooms" ng-click="joinRoomByName(room)" style="text-shadow: none" class="list-group-item text-center"><span>{{room}}</span></a>
+	    </div>
+
+		<br />
+
 		<p class="rooms-history" ng-show="roomsHistory.length">
-			<span>{{_("Available Rooms")}}</span>
+			<span>{{_("Visited Rooms")}}</span>
 			<br/>
 			<a ng-repeat="room in roomsHistory" ng-click="joinRoomByName(room)"><span class="label label-default">{{room}}</span></a>
-
 		</p>
+
 	</div>
 
 	<!-- <div ng-if="!canJoinRooms()" class="welcome-container">
@@ -33,6 +50,7 @@
 			<button ng-if="!myuserid && usersettings.loginUserid" type="button" class="btn btn-primary" ng-click="usersettings.loginUserid()">{{_('Sign in')}}</button>
 		</div>
 	</div> -->
+</div>
 
 	<div ng-if="!canJoinRooms()" class="welcome-container">
 		<form novalidate class="simple-form" role="form">
@@ -57,5 +75,3 @@
 		</div>
 
 	</div>
-
-</div>
