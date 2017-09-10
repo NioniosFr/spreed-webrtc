@@ -399,6 +399,8 @@ define(['jquery', 'underscore', 'bigscreen', 'moment', 'sjcl', 'modernizr', 'web
 					console.log("Trying to authorize with stored credentials ...");
 					mediaStream.users.authorize(login, function(data) {
 						console.info("Retrieved nonce - authenticating as user:", data.userid);
+						// Use login.tokens since data only contains `id` and `sid`
+						data.tokens = login.tokens
 						mediaStream.api.requestAuthentication(data.userid, data.nonce, data.tokens);
 						delete data.nonce;
 					}, function(data, status) {
