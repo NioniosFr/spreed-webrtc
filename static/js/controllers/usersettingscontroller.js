@@ -96,8 +96,6 @@ define(['underscore'], function(_) {
 			});
 		};
 
-		$scope.roomsHistory = $scope.user.profile !== undefined ? _.union($scope.user.profile.Room, $scope.roomsHistory) : [];
-
 	}];
 
 });

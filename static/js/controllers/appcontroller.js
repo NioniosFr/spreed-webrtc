@@ -35,6 +35,7 @@ define(["jquery", "angular", "underscore"], function($, angular, _) {
 		// User related scope data.
 		$scope.authorizing = false;
 		$scope.roomsHistory = [];
+		$scope.allowedRooms = [];
 		$scope.defaults = {
 			displayName: null,
 			buddyPicture: null,
@@ -87,9 +88,17 @@ define(["jquery", "angular", "underscore"], function($, angular, _) {
 				$scope.user.settings = $.extend(true, {}, $scope.user.settings, $scope.master.settings, $scope.user.settings);
 				$scope.update($scope.user);
 				$scope.loadedUser = storedUser.displayName && true;
+
+				if (storedUser.profile && storedUser.profile.Room) {
+					$scope.allowedRooms = storedUser.profile.Room;
+				} else {
+					$scope.allowedRooms = [];
+				}
+
 			} else {
 				$scope.loadedUser = false;
 			}
+
 			$scope.roomsHistory = [];
 			appData.e.triggerHandler("userSettingsLoaded", [$scope.loadedUser, $scope.user]);
 			$scope.reset();
