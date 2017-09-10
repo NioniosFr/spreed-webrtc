@@ -37,7 +37,6 @@ type PipelineManager interface {
 	SessionStore
 	UserStore
 	SessionCreator
-	Config
 	GetPipelineByID(id string) (pipeline *Pipeline, ok bool)
 	GetPipeline(namespace string, sender Sender, session *Session, to string) *Pipeline
 	FindSinkAndSession(to string) (Sink, *Session)
@@ -56,6 +55,7 @@ type pipelineManager struct {
 	duration            time.Duration
 	defaultSinkID       string
 	enabled             bool
+	Config              *Config
 }
 
 func NewPipelineManager(busManager BusManager, sessionStore SessionStore, userStore UserStore, sessionCreator SessionCreator, config *Config) PipelineManager {
@@ -151,12 +151,14 @@ func (plm *pipelineManager) sessionCreate(subject, reply string, msg *SessionCre
 
 	if msg.Room != nil {
 		var canJoin = true
-		if session.authenticated() && Config.UsersMode == "jwt" {
+		if session.authenticated() && plm.Config.UsersMode == "jwt" {
 			canJoin = false
-			user := UserStore.GetUser(session.userid)
-			for _, allowedRoom := range user.Claims.AllowedRooms {
-				if allowedRoom == msg.Room.Name {
-					canJoin = true
+			user, ok := plm.UserStore.GetUser(session.userid)
+			if ok {
+				for _, allowedRoom := range user.Claims.AllowedRooms {
+					if allowedRoom == msg.Room.Name {
+						canJoin = true
+					}
 				}
 			}
 		}
@@ -165,6 +167,7 @@ func (plm *pipelineManager) sessionCreate(subject, reply string, msg *SessionCre
 			log.Println("Joined NATS session to room", room, err)
 		} else {
 			err := NewDataError("room_not_in_allowed_list", "Room is not in the allowed list")
+			log.Fatal(err)
 		}
 	}
 
