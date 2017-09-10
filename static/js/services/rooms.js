@@ -73,6 +73,11 @@ define([
 				alertify.dialog.notify("", translation._("Please sign in to create rooms."));
 				rooms.joinPriorOrDefault(true);
 				break;
+			case "room_join_requires_jwt_auth":
+					console.log("Room join requires a JWT claim.");
+					alertify.dialog.notify("", translation._("You are not authorized to create/join this room."));
+					rooms.joinPriorOrDefault(true);
+					break;
 			default:
 				console.log("Unknown error", error, "while joining room ", requestedRoomName);
 				break;

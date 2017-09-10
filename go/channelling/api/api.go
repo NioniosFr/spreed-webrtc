@@ -96,6 +96,37 @@ func (api *channellingAPI) OnIncoming(sender channelling.Sender, session *channe
 			return nil, channelling.NewDataError("bad_request", "message did not contain Hello")
 		}
 
+		// Compatibily for old clients.
+		roomName := msg.Hello.Name
+		if roomName == "" {
+			roomName = msg.Hello.Id
+		}
+
+		// (nioniosfr) OK, we actually have to check quite a few here...
+		if api.config.UsersEnabled &&
+			api.config.UsersMode == "jwt" &&
+			api.config.JwtRoomLock &&
+			// empty string is the default room
+			// thus the config must have the defaultRoomDisabled=true
+			roomName != "" {
+			log.Printf("hello msg: roomname -> '%s' \n", roomName)
+			if user, ok := api.SessionManager.GetUser(session.Userid()); ok {
+				var userCanJoinRoom = false
+				for _, allowedRoom := range user.Claims.AllowedRooms {
+					if allowedRoom == roomName {
+						userCanJoinRoom = true
+					}
+				}
+				if !userCanJoinRoom {
+					log.Printf("Requested room is not allowed for userid -> %s \n", user.Id)
+					return nil, channelling.NewDataError("room_join_requires_jwt_auth", "Requested room is not allowed for this userid")
+				}
+			} else {
+				log.Printf("Unauthenticated user on session -> %s \n", session.Id)
+				return nil, channelling.NewDataError("default_room_disabled", "Unauthenticated session user")
+			}
+		}
+
 		return api.HandleHello(session, msg.Hello, sender)
 	case "Offer":
 		if msg.Offer == nil || msg.Offer.Offer == nil {
