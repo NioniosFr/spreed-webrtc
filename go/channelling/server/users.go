@@ -412,13 +412,29 @@ func (users *Users) createHandler(mode string, runtime phoenix.Runtime) (handler
 	case "jwt":
 		secret, _ := runtime.GetString("users", "sharedsecret_secret")
 		if secret == "" {
-			err = errors.New("cannot enable sharedsecret users handler: No secret")
+			err = errors.New("No sharedsecret_secret is defined")
 			return
 		}
 
 		jwtSignature, _ := runtime.GetString("extensions", "jwt_signature")
 		if jwtSignature == "" {
 			log.Print("jwt_signature is an empty value. This implies that the certificate will be on 'none' signature type, otherwise authentication will always fail.")
+		}
+
+		// Ensure config prerequisites are met for specfic handler options
+		if runtime.GetBoolDefault("extensions", "jwt_room_lock", true) {
+			if runtime.GetBoolDefault("app", "defaultRoomEnabled", false) {
+				err = errors.New("Default room cannot be enabled along with jwt_room_lock")
+				return nil, err
+			}
+			if !runtime.GetBoolDefault("app", "authorizeRoomJoin", true) {
+				err = errors.New("authorizeRoomJoin cannot be disabled while jwt_room_lock is enabled")
+				return
+			}
+			if !runtime.GetBoolDefault("app", "authorizeRoomCreation", true) {
+				err = errors.New("authorizeRoomCreation cannot be disabled while jwt_room_lock is enabled")
+				return
+			}
 		}
 
 		handler = &JwtUsersSharedsecretHandler{UsersSharedsecretHandler: UsersSharedsecretHandler{secret: []byte(secret)}, jwtSignature: jwtSignature}
