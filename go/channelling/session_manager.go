@@ -155,7 +155,8 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 		return err
 	}
 
-	// TODO: (nioniosfr) Validate here the JWT and store the claims in the User object.
+	// Authentication success.
+	suserid := session.Userid()
 
 	claims := &DataUserClaims{}
 	if auth.Tokens != nil && auth.Tokens.IdToken != "" {
@@ -163,22 +164,22 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 		token, err := jwt.ParseWithClaims(auth.Tokens.IdToken, claims, func(token *jwt.Token) (interface{}, error) {
 			// since we only use the one private key to sign the tokens,
 			// we also only use its public counter part to verify
-			//channeling. // .JwtSignature
 
-			// TODO: (nioniosfr) Put the signature in the config so we have access to it here.
+			if sessionManager.config.JwtSignature != "" {
+				return []byte(sessionManager.config.JwtSignature), nil
+			}
+
 			return jwt.UnsafeAllowNoneSignatureType, nil
 		})
 
 		if claims, ok := token.Claims.(*DataUserClaims); ok && token.Valid {
-			log.Printf("%v %v", claims.AllowedRooms, claims.StandardClaims.ExpiresAt)
+			log.Printf("Claims for user -> %s | %v | expire at -> %v", suserid, claims.AllowedRooms, claims.StandardClaims.ExpiresAt)
 		} else {
 			log.Print(err)
 			return err
 		}
 	}
 
-	// Authentication success.
-	suserid := session.Userid()
 	sessionManager.Lock()
 	user, ok := sessionManager.userTable[suserid]
 	if !ok {
