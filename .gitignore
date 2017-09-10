@@ -41,3 +41,5 @@ stamp-h1
 /ansible/galaxy_roles
 /ansible/*.retry
 /.vscode
+/static/img/spreed-*
+/static/spreed-*
