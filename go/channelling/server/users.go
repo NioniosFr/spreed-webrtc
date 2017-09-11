@@ -50,7 +50,7 @@ import (
 	"github.com/satori/go.uuid"
 	"github.com/strukturag/phoenix"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/strukturag/spreed-webrtc/go/haf"
 )
 
 var (
@@ -268,7 +268,7 @@ func (uh *UsersCertificateHandler) Create(un *UserNonce, request *http.Request) 
 
 type JwtUsersSharedsecretHandler struct {
 	UsersSharedsecretHandler
-	jwtSignature string
+	tokenHelper haf.TokenHelper
 }
 
 func (uh *JwtUsersSharedsecretHandler) Get(request *http.Request) (userid string, err error) {
@@ -281,25 +281,26 @@ func (uh *JwtUsersSharedsecretHandler) Validate(snr *SessionNonceRequest, reques
 		return "", err
 	}
 
-	token, err := uh.ParseRequest(request)
+	token, err := uh.ParseTokenFromRequest(request)
 	if err != nil {
 		return "", err
 	}
 
-	if token.Valid {
+	ok, err := uh.tokenHelper.ValidateJwt(token)
+	if ok {
 		// At this stage we don't really care for claims
 		return userid, nil
 	}
 
-	return "", nil
+	return "", err
 }
 
-func (uh *JwtUsersSharedsecretHandler) ParseRequest(request *http.Request) (*jwt.Token, error) {
+func (uh *JwtUsersSharedsecretHandler) ParseTokenFromRequest(request *http.Request) (string, error) {
 	// Read body
 	body, err := ioutil.ReadAll(request.Body)
 	defer request.Body.Close()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 
@@ -307,35 +308,13 @@ func (uh *JwtUsersSharedsecretHandler) ParseRequest(request *http.Request) (*jwt
 	err = json.Unmarshal(body, &dat)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-
-	// Parse the token
-	token, err := jwt.Parse(dat.Tokens.IdToken, func(token *jwt.Token) (interface{}, error) {
-		// since we only use the one private key to sign the tokens,
-		// we also only use its public counter part to verify
-		//channeling. // .JwtSignature
-
-		if uh.jwtSignature == "" {
-			return jwt.UnsafeAllowNoneSignatureType, nil
-		}
-
-		return []byte(uh.jwtSignature), nil
-	})
-
-	return token, err
+	return dat.Tokens.IdToken, nil
 }
 
 func (uh *JwtUsersSharedsecretHandler) Create(un *UserNonce, request *http.Request) (*UserNonce, error) {
-
-	// TODO(longsleep): Make this configureable - One year for now ...
-	expiration := time.Now().Add(time.Duration(1) * time.Hour * 24 * 31 * 12)
-	un.Timestamp = expiration.Unix()
-	un.UseridCombo = fmt.Sprintf("%d:%s", un.Timestamp, un.Userid)
-	un.Secret = uh.createHMAC(un.UseridCombo)
-
-	return un, nil
-
+	return uh.UsersSharedsecretHandler.Create(un, request)
 }
 
 type UserNonce struct {
@@ -437,7 +416,7 @@ func (users *Users) createHandler(mode string, runtime phoenix.Runtime) (handler
 			}
 		}
 
-		handler = &JwtUsersSharedsecretHandler{UsersSharedsecretHandler: UsersSharedsecretHandler{secret: []byte(secret)}, jwtSignature: jwtSignature}
+		handler = &JwtUsersSharedsecretHandler{UsersSharedsecretHandler: UsersSharedsecretHandler{secret: []byte(secret)}, tokenHelper: haf.NewTokenHelper(jwtSignature)}
 	case "httpheader":
 		headerName, _ := runtime.GetString("users", "httpheader_header")
 		if headerName == "" {

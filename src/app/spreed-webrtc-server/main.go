@@ -45,6 +45,8 @@ import (
 	"github.com/strukturag/spreed-webrtc/go/channelling/server"
 	"github.com/strukturag/spreed-webrtc/go/natsconnection"
 
+	"github.com/strukturag/spreed-webrtc/go/haf"
+
 	"github.com/gorilla/mux"
 	"github.com/strukturag/httputils"
 	"github.com/strukturag/phoenix"
@@ -281,6 +283,11 @@ func runner(runtime phoenix.Runtime) error {
 		runtime.DefaultHTTPSHandler(r)
 	}
 
+	var tokenHelper haf.TokenHelper
+	if config.UsersEnabled && config.UsersMode == "jwt" || config.UsersMode == "access_token" {
+		tokenHelper = haf.NewTokenHelper(config.JwtSignature)
+	}
+
 	// Prepare services.
 	apiConsumer := channelling.NewChannellingAPIConsumer()
 	buddyImages := channelling.NewImageCache()
@@ -288,7 +295,7 @@ func runner(runtime phoenix.Runtime) error {
 	roomManager := channelling.NewRoomManager(config, codec)
 	hub := channelling.NewHub(config, sessionSecret, encryptionSecret, turnSecret, codec)
 	tickets := channelling.NewTickets(sessionSecret, encryptionSecret, computedRealm)
-	sessionManager := channelling.NewSessionManager(config, tickets, hub, roomManager, roomManager, buddyImages, sessionSecret)
+	sessionManager := channelling.NewSessionManager(config, tickets, hub, roomManager, roomManager, buddyImages, sessionSecret, tokenHelper)
 	statsManager := channelling.NewStatsManager(hub, roomManager, sessionManager)
 	busManager := channelling.NewBusManager(apiConsumer, natsClientId, natsChannellingTrigger, natsChannellingTriggerSubject)
 	pipelineManager := channelling.NewPipelineManager(busManager, sessionManager, sessionManager, sessionManager, config)

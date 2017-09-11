@@ -26,11 +26,7 @@ import (
 	"net/http"
 	"sync"
 
-	"log"
-
 	"github.com/gorilla/securecookie"
-
-	"github.com/dgrijalva/jwt-go"
 
 	"github.com/strukturag/spreed-webrtc/go/haf"
 )
@@ -63,9 +59,10 @@ type sessionManager struct {
 	sessionByUserIDTable map[string]*Session
 	useridRetriever      func(*http.Request) (string, error)
 	attestations         *securecookie.SecureCookie
+	tokenHelper          haf.TokenHelper
 }
 
-func NewSessionManager(config *Config, tickets Tickets, unicaster Unicaster, broadcaster Broadcaster, rooms RoomStatusManager, buddyImages ImageCache, sessionSecret []byte) SessionManager {
+func NewSessionManager(config *Config, tickets Tickets, unicaster Unicaster, broadcaster Broadcaster, rooms RoomStatusManager, buddyImages ImageCache, sessionSecret []byte, tokenHelper haf.TokenHelper) SessionManager {
 	sessionManager := &sessionManager{
 		sync.RWMutex{},
 		tickets,
@@ -79,6 +76,7 @@ func NewSessionManager(config *Config, tickets Tickets, unicaster Unicaster, bro
 		make(map[string]*Session),
 		nil,
 		nil,
+		tokenHelper,
 	}
 
 	sessionManager.attestations = securecookie.New(sessionSecret, nil)
@@ -159,29 +157,16 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 
 	// Authentication success.
 	suserid := session.Userid()
-
 	claims := &haf.DataUserClaims{}
-	if auth.Tokens != nil && auth.Tokens.IdToken != "" {
-		// Parse the token
-		token, err := jwt.ParseWithClaims(auth.Tokens.IdToken, claims, func(token *jwt.Token) (interface{}, error) {
-			// since we only use the one private key to sign the tokens,
-			// we also only use its public counter part to verify
-
-			if sessionManager.config.JwtSignature != "" {
-				return []byte(sessionManager.config.JwtSignature), nil
-			}
-
-			return jwt.UnsafeAllowNoneSignatureType, nil
-		})
-
-		if claims, ok := token.Claims.(*haf.DataUserClaims); ok && token.Valid {
-			log.Printf("Claims for user -> %s | %v | expire at -> %v", suserid, claims.AllowedRooms, claims.StandardClaims.ExpiresAt)
-		} else {
-			log.Print(err)
+	if sessionManager.config.JwtRoomLock {
+		// User token type is determined by the usermode.
+		// The idToken is always the one to decode, thus the sender must make sure it is correct
+		daclaims, err := sessionManager.tokenHelper.Decode(sessionManager.config.UsersMode, auth.Tokens.IdToken)
+		if err != nil {
 			return err
 		}
+		claims = daclaims
 	}
-
 	sessionManager.Lock()
 	user, ok := sessionManager.userTable[suserid]
 	if !ok {
