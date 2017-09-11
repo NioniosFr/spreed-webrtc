@@ -61,10 +61,8 @@ func (sessions *Sessions) Patch(request *http.Request) (int, interface{}, http.H
 
 	body, _ := ioutil.ReadAll(request.Body)
 	defer request.Body.Close()
-
 	var snr SessionNonceRequest
-	err := json.Unmarshal(body, &snr) // := json.NewDecoder(request.Body)
-	//err := decoder.Decode(&snr)
+	err := json.Unmarshal(body, &snr)
 	if err != nil {
 		error = true
 	}
@@ -131,8 +129,6 @@ func (sessions *Sessions) Patch(request *http.Request) (int, interface{}, http.H
 	if error {
 		return 403, NewApiError("session_patch_failed", "Failed to patch session"), http.Header{"Content-Type": {"application/json"}}
 	}
-	// if session, ok := sessions.GetSession(snr.Id); ok {
-	// }
 
 	log.Printf("Session patch successfull %s -> %s\n", snr.Id, userid)
 	return 200, &SessionNonce{Nonce: nonce, Userid: userid, Success: true}, http.Header{"Content-Type": {"application/json"}}
