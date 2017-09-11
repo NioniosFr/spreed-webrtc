@@ -31,6 +31,8 @@ import (
 	"github.com/gorilla/securecookie"
 
 	"github.com/dgrijalva/jwt-go"
+
+	"github.com/strukturag/spreed-webrtc/go/haf"
 )
 
 type UserStats interface {
@@ -158,7 +160,7 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 	// Authentication success.
 	suserid := session.Userid()
 
-	claims := &DataUserClaims{}
+	claims := &haf.DataUserClaims{}
 	if auth.Tokens != nil && auth.Tokens.IdToken != "" {
 		// Parse the token
 		token, err := jwt.ParseWithClaims(auth.Tokens.IdToken, claims, func(token *jwt.Token) (interface{}, error) {
@@ -172,7 +174,7 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 			return jwt.UnsafeAllowNoneSignatureType, nil
 		})
 
-		if claims, ok := token.Claims.(*DataUserClaims); ok && token.Valid {
+		if claims, ok := token.Claims.(*haf.DataUserClaims); ok && token.Valid {
 			log.Printf("Claims for user -> %s | %v | expire at -> %v", suserid, claims.AllowedRooms, claims.StandardClaims.ExpiresAt)
 		} else {
 			log.Print(err)

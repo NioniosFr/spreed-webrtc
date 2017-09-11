@@ -21,7 +21,9 @@
 
 package channelling
 
-import "github.com/dgrijalva/jwt-go"
+import (
+	"github.com/strukturag/spreed-webrtc/go/haf"
+)
 
 type DataError struct {
 	Type    string
@@ -113,16 +115,10 @@ type DataSession struct {
 	stamp   int64
 }
 
-type DataUserClaims struct {
-	Roles        string   `json:"Role"`
-	AllowedRooms []string `json:"Room"`
-	jwt.StandardClaims
-}
-
 type DataUser struct {
 	Id       string
 	Sessions int
-	Claims   *DataUserClaims
+	Claims   *haf.DataUserClaims
 }
 
 type DataBye struct {
@@ -239,10 +235,5 @@ type DataAlive struct {
 type DataAuthentication struct {
 	Type           string
 	Authentication *SessionToken
-	Tokens         *DataTokensAuthentication `json:"tokens"`
-}
-
-type DataTokensAuthentication struct {
-	AccessToken string `json:"access_token"`
-	IdToken     string `json:"id_token"`
+	Tokens         *haf.DataTokensAuthentication `json:"tokens"`
 }

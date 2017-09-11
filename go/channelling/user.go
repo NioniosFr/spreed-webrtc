@@ -25,16 +25,18 @@ import (
 	"log"
 	"sort"
 	"sync"
+
+	"github.com/strukturag/spreed-webrtc/go/haf"
 )
 
 type User struct {
 	Id           string
 	sessionTable map[string]*Session
-	Claims       *DataUserClaims
+	Claims       *haf.DataUserClaims
 	mutex        sync.RWMutex
 }
 
-func NewUser(id string, claims *DataUserClaims) *User {
+func NewUser(id string, claims *haf.DataUserClaims) *User {
 	user := &User{
 		Id:           id,
 		sessionTable: make(map[string]*Session),
