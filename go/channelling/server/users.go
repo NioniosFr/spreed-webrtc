@@ -541,14 +541,6 @@ func (users *Users) Post(request *http.Request) (int, interface{}, http.Header) 
 	ct := request.Header.Get("Content-Type")
 	if strings.HasPrefix(ct, "application/json") {
 		snr = &SessionNonceRequest{}
-		// Read body
-		// body, err := ioutil.ReadAll(request.Body)
-		// defer request.Body.Close()
-		// if err != nil {
-		// 	return 400, NewApiError("users_bad_request", "Failed to parse request"), http.Header{"Content-Type": {"application/json"}}
-		// }
-		// request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-
 		decoder := json.NewDecoder(request.Body)
 		err := decoder.Decode(snr)
 		if err != nil {
