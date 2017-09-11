@@ -26,7 +26,7 @@ define([], function() {
     };
 
     return {
-      authenticate: function(username, password, callback) {
+      authenticate: function(username, password, succ_callback, err_callback) {
         return $http({
           method: 'POST',
           url: baseUrl + '/connect/token',
@@ -42,7 +42,7 @@ define([], function() {
             password: password,
             scope: "profile email openid"
           }
-        }).then(callback, callback);
+        }).then(succ_callback, err_callback);
       }
     }
   }];

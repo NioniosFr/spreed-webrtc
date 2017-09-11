@@ -76,7 +76,6 @@ define(['underscore'], function(_) {
 			}, 0);
 		};
 
-
 		$scope.dismiss = function() {
 			 $scope.showError = "hidden";
 			 safeApply($scope);
@@ -87,15 +86,14 @@ define(['underscore'], function(_) {
 			var res = identityProvider.authenticate(user.name, user.password, function(res){
 				if(res.status === 200){
 					authentication.setCredentials(user.name, res.data, $scope.loadUserSettings);
-				} else {
-					authentication.clearCredentials();
-					$scope.errorMessage = res.data.error_description; //"Wrong credentials";
-					$scope.showError = "visible";
-					safeApply($scope);
 				}
+			}, function (res) {
+				authentication.clearCredentials();
+				$scope.errorMessage = res.data.error_description; //"Wrong credentials";
+				$scope.showError = "visible";
+				safeApply($scope);
 			});
 		};
 
 	}];
-
 });
