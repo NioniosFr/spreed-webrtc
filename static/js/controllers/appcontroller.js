@@ -98,7 +98,6 @@ define(["jquery", "angular", "underscore"], function($, angular, _) {
 			} else {
 				$scope.loadedUser = false;
 			}
-
 			$scope.roomsHistory = [];
 			appData.e.triggerHandler("userSettingsLoaded", [$scope.loadedUser, $scope.user]);
 			$scope.reset();
