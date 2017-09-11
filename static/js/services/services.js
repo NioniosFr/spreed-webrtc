@@ -74,7 +74,8 @@ define([
 	'services/playpromise',
 // PA Extras
 	'services/authentication',
-	'services/identityProvider'
+	'services/identityProvider',
+	'services/authInterceptorService'
 ], function(_,
 desktopNotify,
 playSound,
@@ -126,7 +127,8 @@ dummyStream,
 userMedia,
 playPromise,
 authentication,
-identityProvider
+identityProvider,
+authInterceptorService
 ) {
 
 	var services = {
@@ -180,7 +182,8 @@ identityProvider
 		userMedia: userMedia,
 		playPromise: playPromise,
 		authentication: authentication,
-		identityProvider: identityProvider
+		identityProvider: identityProvider,
+		authInterceptorService: authInterceptorService
 	};
 
 	var initialize = function(angModule) {

@@ -159,6 +159,10 @@ define([
 			$locationProvider.html5Mode(true);
 		}]);
 
+		app.config(["$httpProvider", function($httpProvider) {
+			$httpProvider.interceptors.push('authInterceptorService');
+		}]);
+
 		app.run(["$rootScope", "$timeout", "mediaStream", "translation", "continueConnector", function($rootScope, $timeout, mediaStream, translation, continueConnector) {
 			translation.inject($rootScope);
 			console.log("Initializing ...");
