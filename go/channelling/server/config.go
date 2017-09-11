@@ -146,6 +146,7 @@ func NewConfig(container phoenix.Container, tokens bool) (*channelling.Config, e
 		IdentityProviderURI:             container.GetStringDefault("extensions", "identityProviderURI", ""),
 		JwtSignature:                    container.GetStringDefault("extensions", "jwt_signature", ""),
 		JwtRoomLock:                     container.GetBoolDefault("extensions", "jwt_room_lock", true),
+		UserInfoURI:                     container.GetStringDefault("extensions", "userInfoUri", basePath),
 	}, nil
 }
 

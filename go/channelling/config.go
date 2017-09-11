@@ -33,6 +33,7 @@ type Config struct {
 	IdentityProviderURI             string                    // External identity provider's URI
 	JwtSignature                    string                    `json:"-"` // The signature that signed the token,
 	JwtRoomLock                     bool                      // Whether we should block room access based on JWT `Room` claims
+	UserInfoURI                     string                    // URI where the user info details will be retrieved from
 }
 
 func (config *Config) WithModule(m string) bool {

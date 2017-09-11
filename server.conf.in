@@ -238,7 +238,8 @@ enabled = true
 [extensions]
 ; You can place configurations to the extensions made to the the WebRTC server/client under this section.
 
-; The Identity provider's URI where the client can authenticate against and retrieve an access_token and an id_token
+; The Identity provider's URI where the client can authenticate against and retrieve an access_token and an id_token.
+; Defaults to the empty string.
 ;identityProviderURI = https://localhost:5000
 
 ; The secret with which the JWT was signed during issuance by the identity
@@ -256,3 +257,10 @@ enabled = true
 ;   users:mode->jwt
 ; The JWT claim has to contain one or more claims named: `Room`
 ;jwt_room_lock = true
+
+; The User Info API's URI.
+; Access to this endpoint will be used to retrieve user info.
+; Defaults to the `listen` value
+; The user info endpoint returns a json of type:
+; {title:"", photo:"", email:"", profiles:[], activeProfile:0, roles:[{Name:"", Value:""}] }
+;userInfoUri = https://localhost:8080
