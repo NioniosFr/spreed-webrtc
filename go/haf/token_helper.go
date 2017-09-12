@@ -1,7 +1,11 @@
 package haf
 
 import (
+	"encoding/base64"
+	"encoding/json"
+
 	"errors"
+	"log"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -68,5 +72,17 @@ func (th tokenHelper) decodeJwt(idToken string) (*DataUserClaims, error) {
 }
 
 func (th tokenHelper) decodeBase64(idToken string) (*DataUserClaims, error) {
-	return nil, nil
+	uDec, err := base64.URLEncoding.DecodeString(idToken)
+	if err != nil {
+		return nil, err
+	}
+
+	var duc DataUserClaims
+	err = json.Unmarshal(uDec, &duc)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("json: %s \n | duc: -", uDec)
+	return &duc, nil
 }
