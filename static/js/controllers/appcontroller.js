@@ -41,7 +41,7 @@ define(["jquery", "angular", "underscore"], function($, angular, _) {
 			buddyPicture: null,
 			message: null,
 			settings: {
-				videoQuality: "high",
+				videoQuality: "low",
 				sendStereo: false,
 				maxFrameRate: 20,
 				defaultRoom: "",
