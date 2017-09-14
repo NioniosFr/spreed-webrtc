@@ -1,8 +1,8 @@
 "use strict";
 
 define(['sjcl', 'jwt_decode'], function (sjcl, jwt_decode) {
-  return ['$http', 'mediaStream', 'userSettingsData', 'appData',
-    function ($http, mediaStream, userSettingsData, appData) {
+  return ['$http', 'mediaStream', 'globalContext', 'userSettingsData', 'appData',
+    function ($http, mediaStream, globalContext, userSettingsData, appData) {
 
       var createSuseridLocal = function (key, userid, profile, access_token, id_token) {
         var k = sjcl.codec.utf8String.toBits(key);
@@ -35,7 +35,7 @@ define(['sjcl', 'jwt_decode'], function (sjcl, jwt_decode) {
             appData.e.triggerHandler("user", [data.Userid, data.Suserid]);
 
             user.displayName = user.profile.name;
-            user.buddyPicture = user.profile.Picture;
+            user.buddyPicture = user.profile.buddyPicture;
 
             mediaStream.users.store(user);
             userSettingsData.save(user);
@@ -49,13 +49,86 @@ define(['sjcl', 'jwt_decode'], function (sjcl, jwt_decode) {
         });
       };
 
+      function GetUserInfo(access_token){
+        return $http({
+          method: 'GET',
+          url: globalContext.Cfg.UserInfoURI + '/iris/api/common/user/info',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer '+access_token
+          }
+        });
+      }
+
+      function debugDenied(data){
+        var p ={};
+        p.name = "ΥΣΜΙΑΣ (ΑΠΗΥ) ΓΕΑ ΚΜΗ (12345)";
+        p.buddyPicture = "";
+        p.email ="me@haf.gr";
+        p.Profiles=[];
+        p.ActiveProfile=0;
+        p.Role = [];
+        //   {Name:"Name",Value:"Role1"}
+        //   ,{Name:"Room", Value:"Role2"}
+        // ];
+        p.Role.push("Role 1");
+        p.Role.push("Role 2");
+
+        p.Room = [];
+        p.Room.push("Test Room 1")
+        p.Room.push("Test Room 2")
+        p.Room.push("Test Room 3")
+
+        return p;
+      }
+
+      function CreateUserProfile(data) {
+          theProfile = {};
+          theProfile.buddyPicture = data.Photo;
+          theProfile.name = data.Title;
+          theProfile.email = data.Email;
+          theProfile.Room = [];
+          theProfile.Role = [];
+
+          for (var i=0; i < data.Role.length; i++ ){
+            if (data.Roles[i].Name == "Room") {
+              theProfile.Room.push(data.Role[i].Value)
+            }else{
+              theProfile.Role.push(data.Role[i].Value)
+            }
+          }
+
+          return theProfile;
+      }
+
+      function doAuth(username, profile, data, settings_callback){
+        var mediaUser = createSuseridLocal('some-secret-do-not-keep', username, profile, data.access_token, data.id_token);
+        authorize(mediaUser, settings_callback);
+      }
+
       // authentication
       return {
         setCredentials: function (username, data, settings_callback) {
-          var profile = jwt_decode(data.id_token);
+          var profile = {};
+          if (globalContext.Cfg.JwtTokenMode == "base64") {
+            var res = GetUserInfo(data.access_token)
+            .then(function(httpdata) {
+              profile = CreateUserProfile(httpdata);
+              var base64Encoded = window.btoa(encodeURIComponent(JSON.stringify(profile)));
+              data.id_token = base64Encoded;
+              doAuth(username, profile, data, settings_callback);
+            }, function(httpdata){
+              console.warn("GetUserInfo failed: using debug user details");
+              profile = debugDenied(httpdata);
+              var base64Encoded = window.btoa(encodeURIComponent(JSON.stringify(profile)));
+              data.id_token = base64Encoded;
+              doAuth(username, profile, data, settings_callback);
+            });
+          } else {
+            profile = jwt_decode(data.id_token);
+            doAuth(username, profile, data, settings_callback);
+          }
 
-          var mediaUser = createSuseridLocal('some-secret-do-not-keep', username, profile, data.access_token, data.id_token);
-          authorize(mediaUser, settings_callback);
         },
 
         clearCredentials: function () {
