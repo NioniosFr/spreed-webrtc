@@ -3,6 +3,7 @@ package haf
 import (
 	"encoding/base64"
 	"encoding/json"
+	"net/url"
 
 	"errors"
 
@@ -98,8 +99,13 @@ func (th tokenHelper) decodeBase64(idToken string) (*DataUserClaims, error) {
 		return nil, err
 	}
 
+	js, err := url.QueryUnescape(string(uDec))
+	if err != nil {
+		return nil, err
+	}
+
 	var duc DataUserClaims
-	err = json.Unmarshal(uDec, &duc)
+	err = json.Unmarshal([]byte(js), &duc)
 	if err != nil {
 		return nil, err
 	}
