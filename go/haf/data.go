@@ -4,7 +4,7 @@ import "github.com/dgrijalva/jwt-go"
 
 // DataUserClaims ...
 type DataUserClaims struct {
-	Roles        string   `json:"Role"`
+	Roles        []string `json:"Role"`
 	AllowedRooms []string `json:"Room"`
 	jwt.StandardClaims
 }
