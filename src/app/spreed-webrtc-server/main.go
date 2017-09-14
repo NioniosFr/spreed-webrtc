@@ -284,7 +284,7 @@ func runner(runtime phoenix.Runtime) error {
 	}
 
 	var tokenHelper haf.TokenHelper
-	if config.UsersEnabled && config.UsersMode == "jwt" || config.UsersMode == "access_token" {
+	if config.UsersEnabled && config.UsersMode == "jwt" {
 		tokenHelper = haf.NewTokenHelper(config.JwtSignature)
 	}
 

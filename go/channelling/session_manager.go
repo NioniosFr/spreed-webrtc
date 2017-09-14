@@ -161,7 +161,7 @@ func (sessionManager *sessionManager) Authenticate(session *Session, st *Session
 	if sessionManager.config.JwtRoomLock {
 		// User token type is determined by the usermode.
 		// The idToken is always the one to decode, thus the sender must make sure it is correct
-		daclaims, err := sessionManager.tokenHelper.Decode(sessionManager.config.UsersMode, auth.Tokens.IdToken)
+		daclaims, err := sessionManager.tokenHelper.Decode(sessionManager.config.JwtTokenMode, auth.Tokens.IdToken)
 		if err != nil {
 			return err
 		}

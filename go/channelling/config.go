@@ -33,6 +33,7 @@ type Config struct {
 	IdentityProviderURI             string                    // External identity provider's URI
 	JwtSignature                    string                    `json:"-"` // The signature that signed the token,
 	JwtRoomLock                     bool                      // Whether we should block room access based on JWT `Room` claims
+	JwtTokenMode                    string                    // To satisfy older concepts, the mode defines whether the JWT is truly jwt or base64
 	UserInfoURI                     string                    // URI where the user info details will be retrieved from
 }
 

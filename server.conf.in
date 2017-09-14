@@ -168,10 +168,12 @@ enabled = true
 ;    The JWT is validated in the frontend for data integrity. Once validated, the
 ;    initial JWT value along with the "name" attribute found in the unwrapped JWT
 ;    are send via the "sharedsecret" user handler to the backend for further
-;    validation. Once the token and its "jwt_signature" are validated, the user
-;    will be authenticated and the JWT claims will be stored both in the backend
+;    validation. The token itself can be of other a true JWT or a base64 encoded
+;    JSON object (the later is added to support older token implementations).
+;    Once the token and its "jwt_signature" are validated, the user will be
+;    authenticated and the JWT claims will be stored both in the backend
 ;    and frontend for later usage.
-;mode = jwt
+mode = jwt
 ; The shared secred for HMAC validation in "sharedsecret" mode. Best use 32 or
 ; 64 bytes of random data.
 ;sharedsecret_secret = some-secret-do-not-keep
@@ -247,6 +249,11 @@ enabled = true
 ; If not defined or empty, it is assumed that the token is not signed (`none` signing algorithm).
 ;jwt_signature = some_identity_provider_secret
 
+; The JWT token mode determines what the frontend actions should be for the
+; is used in the frontend to determine how to retrive user info and what to be send to the
+; backend as the authentication token. Defaults to `base64`.
+;jwt_token_mode = base64
+
 ; Whether the server should block users from creating/joining rooms based on their
 ; JWT `Room` claims. Defaults to true
 ; To have an effect, the following config requirements have to be met:
@@ -260,7 +267,9 @@ enabled = true
 
 ; The User Info API's URI.
 ; Access to this endpoint will be used to retrieve user info.
-; Defaults to the `listen` value
+; Defaults to the `identityProviderURI` value. The value is required when JWT mode
+; is required when the value `base64`.
 ; The user info endpoint returns a json of type:
 ; {title:"", photo:"", email:"", profiles:[], activeProfile:0, roles:[{Name:"", Value:""}] }
+; That will then be base64 encoded and used as the JWT token in the backend.
 ;userInfoUri = https://localhost:8080
