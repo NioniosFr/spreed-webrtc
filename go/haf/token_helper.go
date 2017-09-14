@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"errors"
-	"log"
 
 	"github.com/dgrijalva/jwt-go"
 )
