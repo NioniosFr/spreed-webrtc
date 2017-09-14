@@ -35,4 +35,4 @@ define([ // Helper module to put non dependency base libraries together.
 	'sha',
 	'sjcl',
 	'text',
-	'jwt-decode'], function() {});
+	'jwt_decode'], function() {});
