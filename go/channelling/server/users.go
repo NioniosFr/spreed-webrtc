@@ -269,6 +269,7 @@ func (uh *UsersCertificateHandler) Create(un *UserNonce, request *http.Request) 
 type JwtUsersSharedsecretHandler struct {
 	UsersSharedsecretHandler
 	tokenHelper haf.TokenHelper
+	tokenType   string
 }
 
 func (uh *JwtUsersSharedsecretHandler) Get(request *http.Request) (userid string, err error) {
@@ -286,7 +287,7 @@ func (uh *JwtUsersSharedsecretHandler) Validate(snr *SessionNonceRequest, reques
 		return "", err
 	}
 
-	ok, err := uh.tokenHelper.ValidateJwt(token)
+	ok, err := uh.tokenHelper.Validate(uh.tokenType, token)
 	if ok {
 		// At this stage we don't really care for claims
 		return userid, nil
@@ -415,8 +416,8 @@ func (users *Users) createHandler(mode string, runtime phoenix.Runtime) (handler
 				return
 			}
 		}
-
-		handler = &JwtUsersSharedsecretHandler{UsersSharedsecretHandler: UsersSharedsecretHandler{secret: []byte(secret)}, tokenHelper: haf.NewTokenHelper(jwtSignature)}
+		tokenType := runtime.GetStringDefault("extensions", "jwt_token_mode", "base64")
+		handler = &JwtUsersSharedsecretHandler{UsersSharedsecretHandler: UsersSharedsecretHandler{secret: []byte(secret)}, tokenHelper: haf.NewTokenHelper(jwtSignature), tokenType: tokenType}
 	case "httpheader":
 		headerName, _ := runtime.GetString("users", "httpheader_header")
 		if headerName == "" {

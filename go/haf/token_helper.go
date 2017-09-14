@@ -11,7 +11,10 @@ import (
 )
 
 type TokenHelper interface {
-	ValidateJwt(jwToken string) (bool, error)
+	Validate(tokenType string, token string) (bool, error)
+	validateJwt(jwToken string) (bool, error)
+	validateBase64(base64Token string) (bool, error)
+
 	Decode(tokenType string, token string) (*DataUserClaims, error)
 	decodeJwt(idToken string) (*DataUserClaims, error)
 	decodeBase64(base64 string) (*DataUserClaims, error)
@@ -29,12 +32,31 @@ func NewTokenHelper(tokenSignature string) TokenHelper {
 	return &tokenHelper{&Config{TokenSignature: tokenSignature}}
 }
 
-func (th tokenHelper) ValidateJwt(jwToken string) (bool, error) {
+func (th tokenHelper) Validate(tokenType string, token string) (bool, error) {
+	switch tokenType {
+	case "jwt":
+		return th.validateJwt(token)
+	case "base64":
+		return th.validateBase64(token)
+	default:
+		return false, errors.New("Failed to validate: Unkown token type")
+	}
+}
+
+func (th tokenHelper) validateJwt(jwToken string) (bool, error) {
 	token, err := jwt.Parse(jwToken, th.getSignature)
 	if err != nil {
 		return false, err
 	}
 	return token.Valid, err
+}
+
+func (th tokenHelper) validateBase64(base64Token string) (bool, error) {
+	_, err := base64.URLEncoding.DecodeString(base64Token)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (th tokenHelper) Decode(tokenType string, token string) (*DataUserClaims, error) {
@@ -83,6 +105,5 @@ func (th tokenHelper) decodeBase64(idToken string) (*DataUserClaims, error) {
 		return nil, err
 	}
 
-	log.Printf("json: %s \n | duc: -", uDec)
 	return &duc, nil
 }
